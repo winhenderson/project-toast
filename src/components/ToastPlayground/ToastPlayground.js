@@ -11,7 +11,22 @@ const VARIANT_OPTIONS = ["notice", "warning", "success", "error"];
 function ToastPlayground() {
   const [variant, setVariant] = React.useState("notice");
   const [message, setMessage] = React.useState("");
-  const { toasts, createToast, closeToast } = React.useContext(ToastContext);
+  const { toasts, createToast, closeToast, setToasts } =
+    React.useContext(ToastContext);
+
+  React.useEffect(() => {
+    function handleKeyDown(event) {
+      if (event.code === "Escape") {
+        setToasts([]);
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
 
   return (
     <div className={styles.wrapper}>
