@@ -3,14 +3,14 @@ import React from "react";
 import Button from "../Button";
 
 import styles from "./ToastPlayground.module.css";
-import Toast from "../Toast/Toast";
+import ToastShelf from "../ToastShelf/ToastShelf";
 
 const VARIANT_OPTIONS = ["notice", "warning", "success", "error"];
 
 function ToastPlayground() {
   const [variant, setVariant] = React.useState("notice");
   const [message, setMessage] = React.useState("");
-  const [toastShown, setToastShown] = React.useState(false);
+  const [toasts, setToasts] = React.useState([]);
 
   return (
     <div className={styles.wrapper}>
@@ -18,13 +18,22 @@ function ToastPlayground() {
         <img alt="Cute toast mascot" src="/toast.png" />
         <h1>Toast Playground</h1>
       </header>
-      {toastShown && (
-        <Toast variant={variant} onClose={() => setToastShown(false)}>
-          {message}
-        </Toast>
-      )}
+      <ToastShelf
+        toasts={toasts}
+        onToastClose={(id) =>
+          setToasts(toasts.filter((toast) => toast.id !== id))
+        }
+      />
 
-      <div className={styles.controlsWrapper}>
+      <form
+        className={styles.controlsWrapper}
+        onSubmit={(event) => {
+          event.preventDefault();
+          setToasts([{ id: crypto.randomUUID(), variant, message }, ...toasts]);
+          setMessage("");
+          setVariant("notice");
+        }}
+      >
         <div className={styles.row}>
           <label
             htmlFor="message"
@@ -67,18 +76,10 @@ function ToastPlayground() {
         <div className={styles.row}>
           <div className={styles.label} />
           <div className={`${styles.inputWrapper} ${styles.radioWrapper}`}>
-            <Button
-              onClick={() => {
-                if (message && variant) {
-                  setToastShown(true);
-                }
-              }}
-            >
-              Pop Toast!
-            </Button>
+            <Button type="submit">Pop Toast!</Button>
           </div>
         </div>
-      </div>
+      </form>
     </div>
   );
 }
